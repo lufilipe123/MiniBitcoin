@@ -7,12 +7,27 @@ public class CotacaoService
 {
     public const decimal CotacaoInicialPadrao = 500_000m;
 
-    public decimal CotacaoAtualBrlPorBtc => throw new NotImplementedException();
+    public decimal CotacaoAtualBrlPorBtc { get; private set; }
 
     public CotacaoService(decimal cotacaoInicial = CotacaoInicialPadrao)
     {
-        throw new NotImplementedException();
+        ValidarCotacao(cotacaoInicial);
+        CotacaoAtualBrlPorBtc = cotacaoInicial;
     }
 
-    public void AtualizarCotacao(decimal novaCotacao) => throw new NotImplementedException();
+    public void AtualizarCotacao(decimal novaCotacao)
+    {
+        ValidarCotacao(novaCotacao);
+        CotacaoAtualBrlPorBtc = novaCotacao;
+    }
+
+    private static void ValidarCotacao(decimal cotacao)
+    {
+        if (cotacao <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(cotacao),
+                "A cotação do Bitcoin deve ser maior que zero.");
+        }
+    }
 }

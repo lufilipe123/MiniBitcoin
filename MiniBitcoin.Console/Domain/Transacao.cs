@@ -11,17 +11,17 @@ public enum TipoTransacao
 /// </summary>
 public sealed class Transacao
 {
-    public TipoTransacao Tipo => throw new NotImplementedException();
+    public TipoTransacao Tipo { get; }
 
-    public long QuantidadeSatoshis => throw new NotImplementedException();
+    public long QuantidadeSatoshis { get; }
 
-    public decimal QuantidadeBtc => throw new NotImplementedException();
+    public decimal QuantidadeBtc => (decimal)QuantidadeSatoshis / Carteira.SatoshisPorBitcoin;
 
-    public decimal CotacaoBrlPorBtc => throw new NotImplementedException();
+    public decimal CotacaoBrlPorBtc { get; }
 
-    public decimal ValorTotalBrl => throw new NotImplementedException();
+    public decimal ValorTotalBrl { get; }
 
-    public DateTime DataHora => throw new NotImplementedException();
+    public DateTime DataHora { get; }
 
     public Transacao(
         TipoTransacao tipo,
@@ -30,6 +30,36 @@ public sealed class Transacao
         decimal valorTotalBrl,
         DateTime dataHora)
     {
-        throw new NotImplementedException();
+        if (!Enum.IsDefined(tipo))
+        {
+            throw new ArgumentOutOfRangeException(nameof(tipo), "Tipo de transação inválido.");
+        }
+
+        if (quantidadeSatoshis <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(quantidadeSatoshis),
+                "A quantidade de satoshis deve ser maior que zero.");
+        }
+
+        if (cotacaoBrlPorBtc <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(cotacaoBrlPorBtc),
+                "A cotação do Bitcoin deve ser maior que zero.");
+        }
+
+        if (valorTotalBrl <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(valorTotalBrl),
+                "O valor total da transação deve ser maior que zero.");
+        }
+
+        Tipo = tipo;
+        QuantidadeSatoshis = quantidadeSatoshis;
+        CotacaoBrlPorBtc = cotacaoBrlPorBtc;
+        ValorTotalBrl = valorTotalBrl;
+        DataHora = dataHora;
     }
 }
