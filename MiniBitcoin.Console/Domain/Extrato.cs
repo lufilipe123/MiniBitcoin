@@ -5,14 +5,37 @@ namespace MiniBitcoin.Console.Domain;
 /// </summary>
 public class Extrato
 {
-    public IReadOnlyList<Transacao> Transacoes => throw new NotImplementedException();
+    private readonly List<Transacao> _transacoes = new();
 
-    public void Registrar(Transacao transacao) => throw new NotImplementedException();
+    public IReadOnlyList<Transacao> Transacoes => _transacoes;
+
+    public void Registrar(Transacao transacao)
+    {
+        ArgumentNullException.ThrowIfNull(transacao);
+        _transacoes.Add(transacao);
+    }
 
     public decimal CalcularPatrimonioTotal(Carteira carteira, decimal cotacaoBrlPorBtc)
-        => throw new NotImplementedException();
+    {
+        ArgumentNullException.ThrowIfNull(carteira);
 
-    public decimal CalcularTotalComprasBrl() => throw new NotImplementedException();
+        if (cotacaoBrlPorBtc <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(cotacaoBrlPorBtc),
+                "A cotação do Bitcoin deve ser maior que zero.");
+        }
 
-    public decimal CalcularTotalVendasBrl() => throw new NotImplementedException();
+        return carteira.SaldoBrl + carteira.SaldoBtc * cotacaoBrlPorBtc;
+    }
+
+    public decimal CalcularTotalComprasBrl()
+        => _transacoes
+            .Where(transacao => transacao.Tipo == TipoTransacao.Compra)
+            .Sum(transacao => transacao.ValorTotalBrl);
+
+    public decimal CalcularTotalVendasBrl()
+        => _transacoes
+            .Where(transacao => transacao.Tipo == TipoTransacao.Venda)
+            .Sum(transacao => transacao.ValorTotalBrl);
 }
